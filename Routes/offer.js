@@ -16,7 +16,6 @@ router.post(
     try {
       const { title, description, price, condition, city, brand, size, color } =
         req.body;
-      console.log(req.body);
 
       if (
         title &&
@@ -61,24 +60,35 @@ router.post(
                   const name = picture.name.split(".")[0];
                   newOffer.product_image.push({ [name]: result.secure_url });
                 } else {
-                  for (let i = 0; i < picture.length; i++) {
-                    const pictureToUpload = picture[i];
+                  const pictureToUpload = req.files.picture;
+                  console.log("here", pictureToUpload);
 
-                    const name = pictureToUpload.name.split(".")[0];
+                  // const name = pictureToUpload.name.split(".")[0];
 
-                    const result = await cloudinary.uploader.upload(
-                      convertToBase64(pictureToUpload),
+                  const arrayOfPomises = pictureToUpload.map((picture) => {
+                    return cloudinary.uploader.upload(
+                      convertToBase64(picture),
                       {
-                        public_id: pictureToUpload.name.split(".")[0],
+                        public_id: picture.name.split(".")[0],
                         folder: `/vinted/offers/${newOffer._id}`,
                       }
                     );
-                    newOffer.product_image.push({ [name]: result.secure_url });
+                  });
+
+                  const result = await Promise.all(arrayOfPomises);
+                  console.log("result", result);
+
+                  for (let i = 0; i < result.length; i++) {
+                    const name = pictureToUpload[i].name.split(".")[0];
+                    newOffer.product_image.push({
+                      [name]: result[i].secure_url,
+                    });
                   }
                 }
               }
 
               await newOffer.save();
+              console.log("final", newOffer);
               return res.status(200).json(newOffer);
             } else {
               throw {
