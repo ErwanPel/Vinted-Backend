@@ -222,7 +222,7 @@ router.get("/offers", async (req, res) => {
   try {
     const { title, priceMax, priceMin, sort, page } = req.query;
 
-    const limit = 3;
+    const limit = 15;
     let formule = limit * (page - 1);
 
     let filters = {};
