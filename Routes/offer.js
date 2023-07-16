@@ -58,10 +58,12 @@ router.post(
                   );
 
                   const name = picture.name.split(".")[0];
-                  newOffer.product_image.push({ [name]: result.secure_url });
+                  newOffer.product_image.push({
+                    ["secure_url"]: result.secure_url,
+                    ["public_id"]: result.public_id,
+                  });
                 } else {
                   const pictureToUpload = req.files.picture;
-                  console.log("here", pictureToUpload);
 
                   // const name = pictureToUpload.name.split(".")[0];
 
@@ -76,7 +78,6 @@ router.post(
                   });
 
                   const result = await Promise.all(arrayOfPomises);
-                  console.log("result", result);
 
                   for (let i = 0; i < result.length; i++) {
                     const name = pictureToUpload[i].name.split(".")[0];
@@ -88,7 +89,7 @@ router.post(
               }
 
               await newOffer.save();
-              console.log("final", newOffer);
+
               return res.status(200).json(newOffer);
             } else {
               throw {
@@ -178,7 +179,6 @@ router.put("/offer/modify", isAuthenticated, async (req, res) => {
 
 router.delete("/offer/delete", isAuthenticated, async (req, res) => {
   try {
-    console.log(req.body);
     const { id } = req.body;
     if (id) {
       const offerFound = await Offer.findById(id);
@@ -188,16 +188,16 @@ router.delete("/offer/delete", isAuthenticated, async (req, res) => {
         if (req.token === userAgree.token) {
           const keyPicture = [];
           offerFound.product_image.forEach((element) => {
-            keyPicture.push(
-              `vinted/offers/${id}/` + Object.keys(element).join("")
-            );
+            let key = element.public_id.split("/");
+            key = key[key.length - 1];
+            keyPicture.push(`vinted/offers/${id}/` + key);
           });
 
           const search = await cloudinary.api.resources({
             type: "upload",
             prefix: `vinted/offers/${id}`,
           });
-          console.log("search", search);
+
           if (search) {
             await cloudinary.api.delete_resources(keyPicture);
             await cloudinary.api.delete_folder(`vinted/offers/${id}/`);
@@ -273,7 +273,7 @@ router.get("/offer/:id", async (req, res) => {
       path: "owner",
       select: "account",
     });
-    console.log(offer);
+
     res.status(200).json(offer);
   } catch (error) {
     return res.status(error.status || 500).json({ message: error.message });

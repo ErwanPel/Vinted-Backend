@@ -1,9 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-app.use(express.json());
 const cors = require("cors");
-app.use(cors());
 
 const mongoose = require("mongoose");
 mongoose.connect(process.env.MONGODB_URI);
@@ -16,10 +14,9 @@ cloudinary.config({
 });
 
 const userRoutes = require("./Routes/user");
-app.use(userRoutes);
-
 const offerRoutes = require("./Routes/offer");
-app.use(offerRoutes);
+
+app.use(express.json()).use(cors()).use(userRoutes).use(offerRoutes);
 
 app.get("/", (req, res) => {
   try {
