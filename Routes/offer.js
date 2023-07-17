@@ -82,7 +82,8 @@ router.post(
                   for (let i = 0; i < result.length; i++) {
                     const name = pictureToUpload[i].name.split(".")[0];
                     newOffer.product_image.push({
-                      [name]: result[i].secure_url,
+                      ["secure_url"]: result[i].secure_url,
+                      ["public_id"]: result[i].public_id,
                     });
                   }
                 }
