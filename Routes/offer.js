@@ -221,9 +221,11 @@ router.delete("/offer/delete", isAuthenticated, async (req, res) => {
 
 router.get("/offers", async (req, res) => {
   try {
+    console.log(req.query);
     const { title, priceMax, priceMin, sort, page } = req.query;
 
-    const limit = 20;
+    let limit = parseInt(req.query.limit) || 20;
+    console.log("ici", limit);
     let formule = limit * (page - 1);
 
     let filters = {};
