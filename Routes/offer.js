@@ -14,8 +14,17 @@ router.post(
   fileUpload(),
   async (req, res) => {
     try {
-      const { title, description, price, condition, city, brand, size, color } =
-        req.body;
+      const {
+        title,
+        description,
+        price,
+        condition,
+        city,
+        brand,
+        size,
+        color,
+        exchange,
+      } = req.body;
 
       if (
         title &&
@@ -44,8 +53,10 @@ router.post(
                   { CITY: city },
                 ],
                 product_image: [],
+                exchange: exchange,
                 owner: user,
               });
+
               if (req.files) {
                 const { picture } = req.files;
                 if (picture.length === undefined) {
