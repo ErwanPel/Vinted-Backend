@@ -1,6 +1,7 @@
 const SHA256 = require("crypto-js/sha256");
 const Base64 = require("crypto-js/enc-base64");
 const uid2 = require("uid2");
+const isAuthenticated = require("../Middlewares/isAuthenticated")
 
 const express = require("express");
 const router = express.Router();
@@ -16,6 +17,8 @@ cloudinary.config({
 
 const convertToBase64 = require("../Utils/convertToBase64");
 const User = require("../Models/User");
+const Transaction = require("../Models/Transaction")
+const Offer = require("../Models/Offer")
 
 router.post("/user/signup", fileUpload(), async (req, res) => {
   try {
@@ -88,6 +91,7 @@ router.post("/user/login", async (req, res) => {
           token: userToFound.token,
           account: {
             username: userToFound.account.username,
+            avatar: userToFound.account.avatar,
           },
         });
       } else {
@@ -100,5 +104,62 @@ router.post("/user/login", async (req, res) => {
     return res.status(error.status || 500).json({ message: error.message });
   }
 });
+
+router.get("/user/buy", isAuthenticated, async(req, res) => {
+  try {
+    console.log(req.token)
+    const findUser = await User.findOne({token: req.token})
+    const UserId= findUser._id
+    const getBuy = await Transaction.find({buyer: UserId})
+   
+    let getOffer = []
+
+    for(let i = 0; i < getBuy.length; i++) {
+      console.log(getBuy[i]) 
+      let productID = getBuy[i].product
+      let product = await Offer.findById(productID).populate({path: "owner", select: "account"})
+      getOffer.push({product, date: getBuy[i].date})
+    }
+    const count = getOffer.length;
+   if (count === 0){
+      throw {status: 400, message: "No buy is found" }
+   } else {
+      res.status(200).json({count, getOffer})
+   }
+  
+  } catch (error) {
+    return res.status(error.status || 500).json({ message: error.message });
+  }
+} )
+
+router.get("/user/sold", isAuthenticated, async(req, res) => {
+  try {
+    console.log(req.token)
+    const findUser = await User.findOne({token: req.token})
+    const UserId= findUser._id
+    const getSell = await Transaction.find({seller: UserId})
+   
+    let getOffer = []
+
+    for(let i = 0; i < getSell.length; i++) {
+      console.log(getSell[i])
+      let productID = getSell[i].product
+      let buyerID = getSell[i].buyer
+      let product = await Offer.findById(productID)
+      let buy = await User.findById(buyerID)
+      console.log(buy.account)
+      getOffer.push({product, buyer: buy.account, date: getSell[i].date})
+    }
+    const count = getOffer.length;
+   if (count === 0){
+      throw {status: 400, message: "No sell is found" }
+   } else {
+      res.status(200).json({count, getOffer})
+   }
+  
+  } catch (error) {
+    return res.status(error.status || 500).json({ message: error.message });
+  }
+} )
 
 module.exports = router;
