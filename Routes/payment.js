@@ -26,7 +26,7 @@ router.post("/pay", isAuthenticated, async (req, res) => {
           console.log("product", findProduct);
           try {
             if (findProduct) {
-              if (findProduct.bought) {
+              if (findProduct.bought === false) {
                 const findSeller = await User.findById(sellerID);
                 console.log("vendeur", findSeller);
 
