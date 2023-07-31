@@ -26,7 +26,7 @@ router.post("/pay", isAuthenticated, async (req, res) => {
           console.log("product", findProduct);
           try {
             if (findProduct) {
-              if (findProduct.bought === false) {
+              if (findProduct.bought) {
                 const findSeller = await User.findById(sellerID);
                 console.log("vendeur", findSeller);
 
@@ -48,14 +48,14 @@ router.post("/pay", isAuthenticated, async (req, res) => {
                     findProduct.bought = true;
                     await findProduct.save();
 
-                    const newTransaction = new Transaction({
-                      seller: findSeller,
-                      buyer: findBuyer,
-                      product: findProduct,
-                      date: datefns.format(new Date(), "yyyy-MM-dd"),
-                    });
+                    // const newTransaction = new Transaction({
+                    // seller: findSeller,
+                    // buyer: findBuyer,
+                    // product: findProduct,
+                    // date: datefns.format(new Date(), "yyyy-MM-dd"),
+                    // });
 
-                    await newTransaction.save();
+                    // await newTransaction.save();
                     res.status(200).json(response.status);
                   } else {
                     throw {
