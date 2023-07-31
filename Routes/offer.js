@@ -291,7 +291,7 @@ router.get("/offer/:id", async (req, res) => {
       path: "owner",
       select: "account",
     });
-    const sentToken = req.headers.authorization.replace("Bearer ", "");
+
     console.log(offer);
     console.log("tk", sentToken);
     if (offer.bought === true) {
@@ -305,15 +305,8 @@ router.get("/offer/:id", async (req, res) => {
       const buyInfo = {
         username: findBuyer.account.username,
       };
-      const findSeller = await User.findById({
-        _id: findTransaction[0].seller,
-      });
-      let flag = false;
-      if (findSeller.token === sentToken) {
-        flag = true;
-      }
-      console.log(flag);
-      res.status(200).json({ offer, buyer: buyInfo, flag });
+
+      res.status(200).json({ offer, buyer: buyInfo });
     } else {
       res.status(200).json(offer);
     }
