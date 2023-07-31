@@ -7,6 +7,7 @@ const Offer = mongoose.model("Offer", {
   product_details: Array,
   product_image: Array,
   exchange: Boolean,
+  bought: Boolean,
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

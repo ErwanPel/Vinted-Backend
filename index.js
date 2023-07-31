@@ -16,13 +16,15 @@ cloudinary.config({
 const userRoutes = require("./Routes/user");
 const offerRoutes = require("./Routes/offer");
 const adminRoutes = require("./Routes/admin");
+const payRoutes = require("./Routes/payment");
 
 app
   .use(express.json())
   .use(cors())
   .use(userRoutes)
   .use(offerRoutes)
-  .use(adminRoutes);
+  .use(adminRoutes)
+  .use(payRoutes);
 
 app.get("/", (req, res) => {
   try {

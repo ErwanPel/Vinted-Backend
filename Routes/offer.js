@@ -54,6 +54,7 @@ router.post(
                 ],
                 product_image: [],
                 exchange: exchange,
+                bought: false,
                 owner: user,
               });
 
@@ -239,7 +240,7 @@ router.get("/offers", async (req, res) => {
     console.log("ici", limit);
     let formule = limit * (page - 1);
 
-    let filters = {};
+    let filters = { bought: false };
     let sortObject = {};
 
     if (priceMax && priceMin) {
@@ -266,6 +267,8 @@ router.get("/offers", async (req, res) => {
         sortObject.product_price = "desc";
       }
     }
+
+    console.log(filters);
 
     const offers = await Offer.find(filters)
       .sort(sortObject)

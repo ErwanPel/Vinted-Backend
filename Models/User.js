@@ -4,7 +4,7 @@ const User = mongoose.model("User", {
   email: { type: String, unique: true },
   account: {
     username: String,
-    avatar: Object, // nous verrons plus tard comment uploader une image
+    avatar: Object,
   },
   newsletter: Boolean,
   token: String,
