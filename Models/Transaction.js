@@ -14,6 +14,7 @@ const Transaction = mongoose.model("Transaction", {
     ref: "Offer",
   },
   date: { type: String, required: true },
+  price: { type: Number },
 });
 
 module.exports = Transaction;

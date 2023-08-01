@@ -6,6 +6,7 @@ const isAuthenticated = require("../Middlewares/isAuthenticated");
 
 const Offer = require("../Models/Offer");
 const User = require("../Models/User");
+const Transaction = require("../Models/Transaction");
 const convertToBase64 = require("../Utils/convertToBase64");
 
 router.post(
@@ -286,12 +287,30 @@ router.get("/offers", async (req, res) => {
 
 router.get("/offer/:id", async (req, res) => {
   try {
+    let sentToken = "";
+    if (req.headers.authorization) {
+      sentToken = req.headers.authorization.replace("Bearer ", "");
+      console.log(sentToken);
+    }
     const offer = await Offer.findById(req.params.id).populate({
       path: "owner",
       select: "account",
     });
-
-    res.status(200).json(offer);
+    if (sentToken) {
+      const findProduct = await Transaction.findOne({ product: req.params.id });
+      console.log(findProduct);
+      const seller = await User.findById(findProduct.seller);
+      console.log(seller);
+      if (sentToken === seller.token) {
+        const buyer = await User.findById(findProduct.buyer);
+        console.log(buyer);
+        res.status(200).json({ offer, buyer: buyer.account });
+      } else {
+        res.status(200).json(offer);
+      }
+    } else {
+      res.status(200).json(offer);
+    }
   } catch (error) {
     return res.status(error.status || 500).json({ message: error.message });
   }
