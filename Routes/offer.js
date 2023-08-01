@@ -293,11 +293,13 @@ router.get("/offer/:id", async (req, res) => {
     let sentToken = "";
     if (req.headers.authorization) {
       sentToken = req.headers.authorization.replace("Bearer ", "");
+      console.log("sentToken", sentToken);
     }
     const offer = await Offer.findById(req.params.id).populate({
       path: "owner",
       select: "account",
     });
+
     // If the users is connected
     if (sentToken) {
       const findProduct = await Transaction.findOne({ product: req.params.id });
