@@ -9,32 +9,28 @@ const User = require("../Models/User");
 
 const datefns = require("date-fns");
 
+// This root receive the stripe's token from the front and send to stripe
+// for the payment.
 router.post("/pay", isAuthenticated, async (req, res) => {
   try {
     const stripeToken = req.body.stripeToken;
-    console.log("stripe", stripeToken);
-    console.log(req.body);
 
     const { productID, sellerID, total, name } = req.body;
 
     if (productID && sellerID && total && name && stripeToken) {
       const findBuyer = await User.findOne({ token: req.token });
-      console.log("acheteur : ", findBuyer);
+
       try {
         if (findBuyer) {
           const findProduct = await Offer.findById(productID);
-          console.log("product", findProduct);
+
           try {
             if (findProduct) {
               if (findProduct.bought === false) {
                 const findSeller = await User.findById(sellerID);
-                console.log("vendeur", findSeller);
 
                 try {
                   if (findSeller) {
-                    console.log("if");
-
-                    console.log(stripeToken);
                     const totalAmount = Number(total) * 100;
 
                     const response = await stripe.charges.create({
@@ -43,11 +39,13 @@ router.post("/pay", isAuthenticated, async (req, res) => {
                       description: name,
                       source: stripeToken,
                     });
-                    console.log(response.status);
 
+                    // This lines save in the database of the Offer Model that the product is bought
+                    // To do : if succeeded, the save is work
                     findProduct.bought = true;
                     await findProduct.save();
 
+                    // The transaction is save in the Transaction Model of the database
                     const newTransaction = new Transaction({
                       seller: findSeller,
                       buyer: findBuyer,

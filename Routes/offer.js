@@ -9,6 +9,7 @@ const User = require("../Models/User");
 const Transaction = require("../Models/Transaction");
 const convertToBase64 = require("../Utils/convertToBase64");
 
+// This root receive the form for publish an offer and send to cloudinary the picture to save and send the data to the database
 router.post(
   "/offer/publish",
   isAuthenticated,
@@ -104,7 +105,7 @@ router.post(
 
               await newOffer.save();
 
-              return res.status(200).json(newOffer);
+              return res.status(200).json({ message: "publication envoyé" });
             } else {
               throw {
                 status: 400,
@@ -135,6 +136,7 @@ router.post(
   }
 );
 
+// This root send data to modify in a body request (this root doesn't modify the picture)
 router.put("/offer/modify", isAuthenticated, async (req, res) => {
   try {
     const {
@@ -191,6 +193,8 @@ router.put("/offer/modify", isAuthenticated, async (req, res) => {
   }
 });
 
+// This root receive the ID of an offer from a body request and remove the folder with the picture from cloudinary
+// and delete the offer from the database
 router.delete("/offer/delete", isAuthenticated, async (req, res) => {
   try {
     const { id } = req.body;
@@ -232,13 +236,13 @@ router.delete("/offer/delete", isAuthenticated, async (req, res) => {
   }
 });
 
+// This root send all the offers who are not sold and accept different parameters from the filter in a query request
 router.get("/offers", async (req, res) => {
   try {
-    console.log(req.query);
     const { title, priceMax, priceMin, sort, page } = req.query;
 
     let limit = parseInt(req.query.limit) || 20;
-    console.log("ici", limit);
+
     let formule = limit * (page - 1);
 
     let filters = { bought: false };
@@ -269,8 +273,6 @@ router.get("/offers", async (req, res) => {
       }
     }
 
-    console.log(filters);
-
     const offers = await Offer.find(filters)
       .sort(sortObject)
       .limit(limit)
@@ -285,33 +287,39 @@ router.get("/offers", async (req, res) => {
   }
 });
 
+// This root send the offer with his ID in the params request
 router.get("/offer/:id", async (req, res) => {
   try {
     let sentToken = "";
     if (req.headers.authorization) {
       sentToken = req.headers.authorization.replace("Bearer ", "");
-      console.log(sentToken);
     }
     const offer = await Offer.findById(req.params.id).populate({
       path: "owner",
       select: "account",
     });
+    // If the users is connected
     if (sentToken) {
       const findProduct = await Transaction.findOne({ product: req.params.id });
-      console.log(findProduct);
+
       const seller = await User.findById(findProduct.seller);
-      console.log(seller);
+      console.log("seller", seller.token, "sentToken", sentToken);
       if (sentToken === seller.token) {
+        console.log("st");
         const buyer = await User.findById(findProduct.buyer);
-        console.log(buyer);
+        console.log("vendeur id");
         res.status(200).json({ offer, buyer: buyer.account });
       } else {
+        console.log("vendu tout utilisateur");
         res.status(200).json(offer);
       }
     } else {
+      console.log("else sans st");
+      // Even if the users isn't connected, he receives the offer
       res.status(200).json(offer);
     }
   } catch (error) {
+    console.log("vendu sans connexion");
     return res.status(error.status || 500).json({ message: error.message });
   }
 });

@@ -9,10 +9,11 @@ const client = mailgun.client({
   key: process.env.MAILGUN_KEY,
 });
 
+// This root receive some data from the signup and send a mail for an administrator whith MailGun
 router.post("/admin/form", async (req, res) => {
   try {
     const { username, email, newsletter } = req.body;
-    console.log("reussis");
+
     const messageData = {
       from: `${username} <${email}>`,
       to: process.env.MAILGUN_USERMAIL,

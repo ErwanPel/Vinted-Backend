@@ -20,6 +20,7 @@ const User = require("../Models/User");
 const Transaction = require("../Models/Transaction");
 const Offer = require("../Models/Offer");
 
+// This root sign a new user who can save a picture for the profil's picture
 router.post("/user/signup", fileUpload(), async (req, res) => {
   try {
     const { username, email, password, newsletter } = req.body;
@@ -79,6 +80,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
   }
 });
 
+// This root connect the user in the site web
 router.post("/user/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -105,10 +107,9 @@ router.post("/user/login", async (req, res) => {
   }
 });
 
+// This root send the purchase's data of the user
 router.get("/user/buy", isAuthenticated, async (req, res) => {
   try {
-    console.log("ici");
-    console.log(req.token);
     const findUser = await User.findOne({ token: req.token });
     const UserId = findUser._id;
     const getBuy = await Transaction.find({ buyer: UserId });
@@ -116,7 +117,6 @@ router.get("/user/buy", isAuthenticated, async (req, res) => {
     let getOffer = [];
 
     for (let i = 0; i < getBuy.length; i++) {
-      console.log(getBuy[i]);
       let productID = getBuy[i].product;
       let product = await Offer.findById(productID).populate({
         path: "owner",
@@ -135,9 +135,9 @@ router.get("/user/buy", isAuthenticated, async (req, res) => {
   }
 });
 
+// This root send the sales's data of the user
 router.get("/user/sold", isAuthenticated, async (req, res) => {
   try {
-    console.log(req.token);
     const findUser = await User.findOne({ token: req.token });
     const UserId = findUser._id;
     const getSell = await Transaction.find({ seller: UserId });
@@ -145,12 +145,11 @@ router.get("/user/sold", isAuthenticated, async (req, res) => {
     let getOffer = [];
 
     for (let i = 0; i < getSell.length; i++) {
-      console.log(getSell[i]);
       let productID = getSell[i].product;
       let buyerID = getSell[i].buyer;
       let product = await Offer.findById(productID);
       let buy = await User.findById(buyerID);
-      console.log(buy.account);
+
       getOffer.push({ product, buyer: buy.account, date: getSell[i].date });
     }
     const count = getOffer.length;
