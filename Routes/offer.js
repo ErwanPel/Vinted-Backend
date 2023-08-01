@@ -306,20 +306,22 @@ router.get("/offer/:id", async (req, res) => {
 
       const seller = await User.findById(findProduct.seller);
       console.log("seller", seller.token, "sentToken", sentToken);
-      if (sentToken === seller.token) {
-        console.log("st");
-        const buyer = await User.findById(findProduct.buyer);
-        console.log("vendeur id");
-        offer["buyer"] = buyer.account;
-        res.status(200).json(offer);
+      if (seller) {
+        if (sentToken === seller.token) {
+          console.log("st");
+          const buyer = await User.findById(findProduct.buyer);
+          console.log("vendeur id");
+          offer["buyer"] = buyer.account;
+          res.status(200).json(offer);
+        } else {
+          console.log("vendu tout utilisateur");
+          res.status(200).json(offer);
+        }
       } else {
-        console.log("vendu tout utilisateur");
+        console.log("else sans st");
+        // Even if the users isn't connected, he receives the offer
         res.status(200).json(offer);
       }
-    } else {
-      console.log("else sans st");
-      // Even if the users isn't connected, he receives the offer
-      res.status(200).json(offer);
     }
   } catch (error) {
     console.log("vendu sans connexion");
