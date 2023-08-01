@@ -295,16 +295,16 @@ router.get("/offer/:id", async (req, res) => {
       sentToken = req.headers.authorization.replace("Bearer ", "");
       console.log("sentToken", sentToken);
     }
-    const offer = await Offer.findById(req.params.id).populate({
-      path: "owner",
-      select: "account",
-    });
+    const offer = await Offer.findById(req.params.id)
+      .populate({
+        path: "owner",
+        select: "account",
+      })
+      .populate({ path: "buyer", select: "account" });
 
-    console.log("else sans st");
     // Even if the users isn't connected, he receives the offer
     res.status(200).json(offer);
   } catch (error) {
-    console.log("vendu sans connexion");
     return res.status(error.status || 500).json({ message: error.message });
   }
 });
