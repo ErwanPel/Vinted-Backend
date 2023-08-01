@@ -18,12 +18,15 @@ router.post("/pay", isAuthenticated, async (req, res) => {
     const { productID, sellerID, total, name } = req.body;
 
     if (productID && sellerID && total && name && stripeToken) {
-      const findBuyer = await User.findOne({ token: req.token });
+      const findBuyer = await User.findOne({ token: req.token }).populate({
+        path: "owner",
+        select: "account",
+      });
 
       try {
         if (findBuyer) {
           const findProduct = await Offer.findById(productID);
-
+          console.log(findProduct);
           try {
             if (findProduct) {
               if (findProduct.bought === false) {
@@ -43,6 +46,7 @@ router.post("/pay", isAuthenticated, async (req, res) => {
                     // This lines save in the database of the Offer Model that the product is bought
                     // To do : if succeeded, the save is work
                     findProduct.bought = true;
+                    findProduct.buyer = findBuyer;
                     await findProduct.save();
 
                     // The transaction is save in the Transaction Model of the database

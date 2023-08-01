@@ -104,7 +104,7 @@ router.post(
               }
 
               await newOffer.save();
-
+              console.log(newOffer);
               return res.status(200).json({ message: "publication envoyé" });
             } else {
               throw {
