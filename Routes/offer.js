@@ -310,7 +310,8 @@ router.get("/offer/:id", async (req, res) => {
         console.log("st");
         const buyer = await User.findById(findProduct.buyer);
         console.log("vendeur id");
-        res.status(200).json({ offer, buyer: buyer.account });
+        offer["buyer"] = buyer.account;
+        res.status(200).json(offer);
       } else {
         console.log("vendu tout utilisateur");
         res.status(200).json(offer);
