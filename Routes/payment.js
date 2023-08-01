@@ -18,10 +18,7 @@ router.post("/pay", isAuthenticated, async (req, res) => {
     const { productID, sellerID, total, name } = req.body;
 
     if (productID && sellerID && total && name && stripeToken) {
-      const findBuyer = await User.findOne({ token: req.token }).populate({
-        path: "owner",
-        select: "account",
-      });
+      const findBuyer = await User.findOne({ token: req.token });
 
       try {
         if (findBuyer) {

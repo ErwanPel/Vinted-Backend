@@ -13,7 +13,8 @@ const Offer = mongoose.model("Offer", {
     ref: "User",
   },
   buyer: {
-    Object,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 
