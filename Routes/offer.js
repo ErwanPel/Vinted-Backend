@@ -295,12 +295,23 @@ router.get("/offer/:id", async (req, res) => {
       sentToken = req.headers.authorization.replace("Bearer ", "");
       console.log("sentToken", sentToken);
     }
+    console.log("dans le offer");
     const offer = await Offer.findById(req.params.id)
       .populate({
         path: "owner",
         select: "account",
       })
       .populate({ path: "buyer", select: "account" });
+
+    const user = await User.findById(offer.owner._id);
+    console.log(user.token, sentToken);
+    if (user.token === sentToken) {
+      console.log("le propriétaire de l'objet est sur sa page");
+      offer["owner_connect"] = true;
+    } else {
+      console.log("un utilisateur est sur la page d'un autre propriétaire");
+      offer["owner_connect"] = false;
+    }
 
     // Even if the users isn't connected, he receives the offer
     res.status(200).json(offer);

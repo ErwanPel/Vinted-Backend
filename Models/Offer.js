@@ -16,6 +16,7 @@ const Offer = mongoose.model("Offer", {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  owner_connect: Boolean,
 });
 
 module.exports = Offer;
