@@ -197,11 +197,12 @@ router.put("/offer/modify", isAuthenticated, async (req, res) => {
 // and delete the offer from the database
 router.delete("/offer/delete", isAuthenticated, async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id } = req.query;
     if (id) {
       const offerFound = await Offer.findById(id);
 
       if (offerFound) {
+        console.log(offerFound);
         const userAgree = await User.findById(offerFound.owner);
         if (req.token === userAgree.token) {
           const keyPicture = [];
@@ -312,7 +313,6 @@ router.get("/offer/:id", async (req, res) => {
       console.log("un utilisateur est sur la page d'un autre propriétaire");
       offer["owner_connect"] = false;
     }
-
     // Even if the users isn't connected, he receives the offer
     res.status(200).json(offer);
   } catch (error) {
