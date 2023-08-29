@@ -104,7 +104,7 @@ router.post(
               }
 
               await newOffer.save();
-              console.log(newOffer);
+
               return res.status(200).json({ message: "publication envoyé" });
             } else {
               throw {
@@ -202,7 +202,6 @@ router.delete("/offer/delete", isAuthenticated, async (req, res) => {
       const offerFound = await Offer.findById(id);
 
       if (offerFound) {
-        console.log(offerFound);
         const userAgree = await User.findById(offerFound.owner);
         if (req.token === userAgree.token) {
           const keyPicture = [];
@@ -294,9 +293,8 @@ router.get("/offer/:id", async (req, res) => {
     let sentToken = "";
     if (req.headers.authorization) {
       sentToken = req.headers.authorization.replace("Bearer ", "");
-      console.log("sentToken", sentToken);
     }
-    console.log("dans le offer");
+
     const offer = await Offer.findById(req.params.id)
       .populate({
         path: "owner",
@@ -305,12 +303,10 @@ router.get("/offer/:id", async (req, res) => {
       .populate({ path: "buyer", select: "account" });
 
     const user = await User.findById(offer.owner._id);
-    console.log(user.token, sentToken);
+
     if (user.token === sentToken) {
-      console.log("le propriétaire de l'objet est sur sa page");
       offer["owner_connect"] = true;
     } else {
-      console.log("un utilisateur est sur la page d'un autre propriétaire");
       offer["owner_connect"] = false;
     }
     // Even if the users isn't connected, he receives the offer
