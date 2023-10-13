@@ -23,14 +23,16 @@ router.post("/pay", isAuthenticated, async (req, res) => {
       try {
         if (findBuyer) {
           const findProduct = await Offer.findById(productID);
-          console.log(findProduct);
+
           try {
             if (findProduct) {
+              // if the product is not buy yet
               if (findProduct.bought === false) {
                 const findSeller = await User.findById(sellerID);
 
                 try {
                   if (findSeller) {
+                    // For have the real price with Stripe, it's necessary to multiply by 100
                     const totalAmount = Number(total) * 100;
 
                     const response = await stripe.charges.create({
@@ -41,16 +43,18 @@ router.post("/pay", isAuthenticated, async (req, res) => {
                     });
 
                     // This lines save in the database of the Offer Model that the product is bought
-                    // To do : if succeeded, the save is work
+
                     findProduct.bought = true;
-                    findProduct.buyer = findBuyer;
+                    findProduct.seller = findSeller._id;
+                    findProduct.owner = findBuyer._id;
+                    findProduct.markModified("owner");
                     await findProduct.save();
 
                     // The transaction is save in the Transaction Model of the database
                     const newTransaction = new Transaction({
-                      seller: findSeller,
-                      buyer: findBuyer,
-                      product: findProduct,
+                      seller: findSeller._id,
+                      buyer: findBuyer._id,
+                      product: findProduct._id,
                       price: Number(total),
                       date: datefns.format(new Date(), "yyyy-MM-dd"),
                     });
