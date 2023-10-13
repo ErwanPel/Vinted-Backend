@@ -300,7 +300,8 @@ router.get("/offer/:id", async (req, res) => {
         path: "owner",
         select: "account",
       })
-      .populate({ path: "buyer", select: "account" });
+      .populate({ path: "seller", select: "account" })
+      .populate({ path: "seller", select: "token" });
 
     const user = await User.findById(offer.owner._id);
 
@@ -308,6 +309,12 @@ router.get("/offer/:id", async (req, res) => {
       offer["owner_connect"] = true;
     } else {
       offer["owner_connect"] = false;
+    }
+
+    if (offer.seller.token === sentToken) {
+      offer["seller_connect"] = true;
+    } else {
+      offer["seller_connect"] = false;
     }
     // Even if the users isn't connected, he receives the offer
     res.status(200).json(offer);
