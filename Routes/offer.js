@@ -291,31 +291,36 @@ router.get("/offers", async (req, res) => {
 router.get("/offer/:id", async (req, res) => {
   try {
     let sentToken = "";
+
+    // Verify if a user is connected or it's an anonymous user
     if (req.headers.authorization) {
       sentToken = req.headers.authorization.replace("Bearer ", "");
     }
 
-    const offer = await Offer.findById(req.params.id)
-      .populate({
-        path: "owner",
-        select: "account",
-      })
-      .populate({ path: "seller", select: "account" })
-      .populate({ path: "seller", select: "token" });
+    const offer = await Offer.findById(req.params.id).populate({
+      path: "owner",
+      select: "account",
+    });
 
     const user = await User.findById(offer.owner._id);
 
     if (user.token === sentToken) {
+      // Verify if the owner of this product is watching the page
       offer["owner_connect"] = true;
     } else {
       offer["owner_connect"] = false;
     }
 
-    if (offer.seller.token === sentToken) {
-      offer["seller_connect"] = true;
+    if (offer.seller) {
+      // Verify if the seller of this product is watching the page
+      const seller = await User.findById(offer.seller);
+
+      if (seller.token === sentToken) offer["seller_connect"] = true;
+      else offer["seller_connect"] = false;
     } else {
       offer["seller_connect"] = false;
     }
+
     // Even if the users isn't connected, he receives the offer
     res.status(200).json(offer);
   } catch (error) {
