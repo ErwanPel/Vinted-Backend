@@ -56,7 +56,6 @@ router.post(
                 ],
                 product_image: [],
                 exchange: exchange,
-                bought: false,
                 owner: user,
               });
 

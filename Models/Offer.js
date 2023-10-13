@@ -7,7 +7,7 @@ const Offer = mongoose.model("Offer", {
   product_details: Array,
   product_image: Array,
   exchange: Boolean,
-  bought: Boolean,
+  bought: { type: Boolean, default: false },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -15,8 +15,10 @@ const Offer = mongoose.model("Offer", {
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    default: null,
   },
   owner_connect: Boolean,
+  seller_connect: { type: Boolean, default: false },
 });
 
 module.exports = Offer;
