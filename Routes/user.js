@@ -118,12 +118,16 @@ router.get("/user/buy", isAuthenticated, async (req, res) => {
 
     for (let i = 0; i < getBuy.length; i++) {
       let productID = getBuy[i].product;
-      let product = await Offer.findById(productID).populate({
-        path: "owner",
-        select: "account",
-      });
+      let product = await Offer.findById(productID)
+        .populate({
+          path: "owner",
+          select: "account",
+        })
+        .populate({ path: "seller", select: "account" });
       getOffer.push({ product, date: getBuy[i].date });
     }
+    console.log(getOffer);
+
     const count = getOffer.length;
     if (count === 0) {
       throw { status: 400, message: "No buy is found" };
