@@ -13,13 +13,17 @@ VINTED Backend
 </p>
 
 
+## Tech Stack
 
+[**Client:**](https://github.com/ErwanPel/Vinted-frontend) React.js
+
+**Server:** Node.js, Express.js, MongoDB
 
 ## Overview
 
 This replica of Vinted is the guiding thread project carried out during the "Le Réacteur" bootcamp. It allows you to understand the basic structure of an e-commerce site, from the creation of a user to the presentation of offers and payment.
 
-This project manages routes for :
+This project manages 11 routes for :
 
 1) user registration and connection.
 2) consultation of all offers, or of a specific offer.
@@ -30,9 +34,6 @@ This project manages routes for :
 
 </br>
 
-Backend development uses Node.js and Express.js / MongoDB servers for database management (mongoose package). This server uses 11 routes to perform the above tasks.
-
-</br>
 This project enables images to be uploaded to cloudinary using the express-fileupload and cloudinary packages.
 The Stripe API is used for payment management.
 The Mailgun.js and form-data APIs are used to send automated e-mails.
