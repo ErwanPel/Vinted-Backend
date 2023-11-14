@@ -17,9 +17,7 @@ VINTED Backend
 
 ## Overview
 
-
-
-**Perfect to start an Vinted clone Backend.** 
+This replica of Vinted is the guiding thread project carried out during the "Le Réacteur" bootcamp. It allows you to understand the basic structure of an e-commerce site, from the creation of a user to the presentation of offers and payment.
 
 This project manages routes for :
 
