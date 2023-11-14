@@ -72,7 +72,7 @@ npx nodemon index.js
 
 You can test different server routes with software such as [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/).
 
-
+You can see the client side for this Vinted Project [here](https://github.com/ErwanPel/Vinted-frontend).
 
 ## Star, Fork, Clone & Contribute
 
